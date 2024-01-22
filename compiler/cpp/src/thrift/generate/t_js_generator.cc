@@ -2827,8 +2827,13 @@ std::string t_js_generator::ts_function_signature(t_function* tfunction, bool in
     string original_optional = ts_get_req(*f_iter);
     string optional = has_written_optional ? "?" : original_optional;
     has_written_optional = has_written_optional || optional.size() > 0;
+    string name = (*f_iter)->get_name();
 
-    str += (*f_iter)->get_name() + optional + ": " + ts_get_type((*f_iter)->get_type());
+    if (name == "arguments") {
+      name = "args";
+    }
+
+    str += name + optional + ": " + ts_get_type((*f_iter)->get_type());
 
     if (f_iter + 1 != fields.end() || (include_callback && fields.size() > 0)) {
       str += ", ";
