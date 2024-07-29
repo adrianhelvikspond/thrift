@@ -1448,7 +1448,7 @@ void t_js_generator::generate_process_function(t_service* tservice, t_function* 
                       + "_result";
 
   indent(f_service_) << js_const_type_ << "args = new " << argsname << "();" << endl << indent()
-             << "args.read(input);" << endl << indent() << "input.readMessageEnd();" << endl;
+             << "args.__proto__.read.call(args, input);" << endl << indent() << "input.readMessageEnd();" << endl;
 
   // Generate the function call
   t_struct* arg_struct = tfunction->get_arglist();
@@ -2153,13 +2153,13 @@ void t_js_generator::generate_service_client(t_service* tservice) {
 
       indent_up();
       f_service_ << indent() << js_const_type_ << "x = new Thrift.TApplicationException();" << endl
-                 << indent() << "x.read(" << inputVar << ");" << endl
+                 << indent() << "x.__proto__.read.call(x, " << inputVar << ");" << endl
                  << indent() << inputVar << ".readMessageEnd();" << endl
                  << indent() << render_recv_throw("x") << endl;
       scope_down(f_service_);
 
       f_service_ << indent() << js_const_type_ << "result = new " << resultname << "();" << endl << indent()
-                 << "result.read(" << inputVar << ");" << endl;
+                 << "result.__proto__.read.call(result, " << inputVar << ");" << endl;
 
       f_service_ << indent() << inputVar << ".readMessageEnd();" << endl << endl;
 
@@ -2300,7 +2300,7 @@ void t_js_generator::generate_deserialize_field(ostream& out,
  */
 void t_js_generator::generate_deserialize_struct(ostream& out, t_struct* tstruct, string prefix) {
   out << indent() << prefix << " = new " << js_type_namespace(tstruct->get_program())
-      << tstruct->get_name() << "();" << endl << indent() << prefix << ".read(input);" << endl;
+      << tstruct->get_name() << "();" << endl << indent() << prefix << ".__proto__.read.call(" << prefix << ", input);" << endl;
 }
 
 void t_js_generator::generate_deserialize_container(ostream& out, t_type* ttype, string prefix) {
